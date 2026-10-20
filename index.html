@@ -1,40 +1,549 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Gifora</title>
+    <meta name="theme-color" content="#0d0d14">
+    <meta name="description" content="Gifora — bring your favorite GIFs to life on your desktop.">
+    <title>Gifora — Animated Desktop</title>
+
     <style>
-        /* Минимальные стили для строки поиска, чтобы она вписалась в ваш CSS */
-        .search-container {
+        /* ---------- Theme ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0d0d14;
+            --bg-soft: #151522;
+            --text: #e8e8f2;
+            --text-dim: #9a9ab3;
+            --accent: #8b5cf6;
+            --accent-2: #ec4899;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system,
+                Roboto, Arial, sans-serif;
+            background:
+                radial-gradient(
+                    circle at 20% 0%,
+                    rgba(139, 92, 246, 0.18),
+                    transparent 45%
+                ),
+                radial-gradient(
+                    circle at 80% 100%,
+                    rgba(236, 72, 153, 0.14),
+                    transparent 45%
+                ),
+                var(--bg);
+            background-attachment: fixed;
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible {
+            outline: 2px solid var(--accent-2);
+            outline-offset: 4px;
+        }
+
+        /* ---------- Navigation ---------- */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(13, 13, 20, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .atre1,
+        .atre2 {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .nav a:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .atre2 a {
+            border: 1px solid var(--border);
+        }
+
+        .atre2 a:hover {
+            border-color: var(--accent);
+        }
+
+        /* ---------- Divider ---------- */
+        .span {
+            height: 1px;
+            width: min(600px, 85%);
+            margin: 40px auto;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--accent),
+                transparent
+            );
+            opacity: 0.6;
+        }
+
+        /* ---------- Hero ---------- */
+        .mg {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
             text-align: center;
-            margin: 20px 0;
         }
+
+        .imgstart {
+            display: block;
+            max-width: 220px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto 24px;
+            border-radius: 24px;
+            filter: drop-shadow(
+                0 12px 40px rgba(139, 92, 246, 0.45)
+            );
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .imgstart:not([src]),
+        .imgstart[src=""] {
+            display: none;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h1 {
+            font-size: clamp(2.8rem, 8vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            background: linear-gradient(
+                90deg,
+                var(--accent),
+                var(--accent-2)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+        }
+
+        /* ---------- Download button ---------- */
+        #download {
+            display: inline-block;
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 14px;
+            background: linear-gradient(
+                135deg,
+                var(--accent),
+                var(--accent-2)
+            );
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s,
+                filter 0.2s;
+        }
+
+        #download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(236, 72, 153, 0.45);
+            filter: brightness(1.08);
+        }
+
+        #download:active {
+            transform: translateY(0);
+        }
+
+        /* ---------- Description ---------- */
+        .description {
+            margin-top: 45px;
+            padding: 32px;
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 1.02rem;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .description h2 {
+            color: var(--text);
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .description p {
+            margin-bottom: 16px;
+        }
+
+        .description p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ---------- GIF Library ---------- */
+        .library {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px 120px;
+            text-align: center;
+            scroll-margin-top: 80px;
+        }
+
+        .library h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            background: linear-gradient(
+                90deg,
+                var(--accent),
+                var(--accent-2)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .library-sub {
+            color: var(--text-dim);
+            margin-bottom: 28px;
+        }
+
+        /* ---------- Search ---------- */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            max-width: 560px;
+            margin: 0 auto 20px;
+        }
+
         .search-container input {
-            padding: 10px 15px;
-            font-size: 16px;
-            width: 60%;
-            max-width: 400px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
+            flex: 1;
+            min-width: 0;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 20px;
+            color: var(--text);
+            font-size: 1rem;
+            text-align: left;
+            outline: none;
+            transition: border-color 0.2s;
         }
+
+        .search-container input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-container input:focus {
+            border-color: var(--accent);
+        }
+
         .search-container button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
+            background: linear-gradient(
+                135deg,
+                var(--accent),
+                var(--accent-2)
+            );
+            color: #fff;
             border: none;
-            border-radius: 5px;
+            border-radius: 12px;
+            padding: 0 24px;
+            font-weight: 600;
+            font-size: 1rem;
             cursor: pointer;
-            margin-left: 10px;
+            transition: transform 0.2s, filter 0.2s;
         }
+
         .search-container button:hover {
-            background-color: #0056b3;
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .search-container button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        .library-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .secondary-btn:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        /* ---------- GIF Grid ---------- */
+        .gif-grid {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(min(220px, 100%), 1fr)
+            );
+            gap: 20px;
+        }
+
+        .gif-card {
+            min-width: 0;
+            background: var(--bg-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition:
+                transform 0.2s,
+                border-color 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .gif-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 16px 40px rgba(139, 92, 246, 0.25);
+        }
+
+        .gif-preview {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            display: block;
+            background-color: rgba(255, 255, 255, 0.025);
+            background-image:
+                linear-gradient(45deg, #1c1c29 25%, transparent 25%),
+                linear-gradient(-45deg, #1c1c29 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #1c1c29 75%),
+                linear-gradient(-45deg, transparent 75%, #1c1c29 75%);
+            background-size: 20px 20px;
+            background-position:
+                0 0,
+                0 10px,
+                10px -10px,
+                -10px 0;
+            padding: 10px;
+        }
+
+        .gif-title {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            padding: 10px 12px 4px;
+            overflow-wrap: anywhere;
+        }
+
+        .gif-dl {
+            display: block;
+            margin-top: auto;
+            padding: 12px;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-top: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .gif-dl:hover {
+            background: linear-gradient(
+                135deg,
+                var(--accent),
+                var(--accent-2)
+            );
+        }
+
+        /* ---------- Status ---------- */
+        .status {
+            color: var(--text-dim);
+            padding: 35px 16px;
+            text-align: center;
+            background: rgba(21, 21, 34, 0.65);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .status[hidden] {
+            display: none;
+        }
+
+        .status.error {
+            color: #fda4af;
+        }
+
+        .status a {
+            color: var(--text);
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            padding: 24px;
+            text-align: center;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        /* ---------- Mobile ---------- */
+        @media (max-width: 600px) {
+            .nav {
+                padding: 10px 12px;
+                align-items: flex-start;
+            }
+
+            .nav a {
+                padding: 6px 8px;
+                font-size: 0.8rem;
+            }
+
+            .atre1,
+            .atre2 {
+                gap: 4px;
+            }
+
+            .mg {
+                padding: 0 18px 60px;
+            }
+
+            .mg > .span {
+                margin: 28px auto;
+            }
+
+            .description {
+                padding: 22px;
+            }
+
+            #download {
+                width: 100%;
+            }
+
+            .library {
+                padding: 20px 18px 80px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-container input {
+                width: 100%;
+            }
+
+            .search-container button {
+                padding: 14px;
+            }
+
+            .gif-grid {
+                grid-template-columns: repeat(
+                    auto-fill,
+                    minmax(min(145px, 100%), 1fr)
+                );
+                gap: 12px;
+            }
+
+            .gif-title {
+                font-size: 0.78rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
+
 <body>
+    <!-- Navigation -->
     <nav>
         <div class="nav">
             <div class="atre1">
@@ -42,140 +551,365 @@
                 <a href="#download">download</a>
                 <a href="#library">library</a>
             </div>
- 
+
             <div class="atre2">
-                <a href="https://discord.com/channels/1559254834098479136/1559254834694324358">user discord</a>
+                <a
+                    href="https://discord.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >user discord</a>
             </div>
         </div>
     </nav>
+
     <div class="span"></div>
-    <div class="mg">
-        <img class="imgstart" src="imgstart.png" alt="">
-        <h1>Gifora</h1>
-        <p>Bring your favorite GIFs to life on your desktop.</p>
-        <div class="span"></div>
-        <a id="download" href="gif.zip" download>скачать прогу</a>
-        <p style="margin-top: 45px;">Make Your Desktop Come Alive
-        
-            Gifora brings your favorite GIFs straight to your desktop, allowing you to personalize your workspace exactly the
-            way you want.
-        
-            Choose any GIF you love and turn it into a floating animation on your screen. Easily resize it, adjust its
-            transparency, and drag it anywhere on your desktop. Whether you prefer a subtle animation in the corner or a more
-            noticeable presence on your screen, Gifora gives you complete control over how your GIF looks and where it appears.
-        
-            ### Your Desktop. Your Style. Your GIFs.
-        
-            Give your desktop a personal touch with Gifora. Simple, customizable, and made to bring a little more life to your
-            everyday workspace.
-        </p>
-    </div>
- 
-    <section class="library" id="library">
-        <h2>GIF Library</h2>
-        <p class="library-sub">Pick a GIF and download it, then load it into Gifora.</p>
- 
-        <!-- БЛОК ПОИСКА -->
-        <div class="search-container">
-            <input type="text" id="gif-search-input" placeholder="Search for GIFs (e.g., cats, anime)...">
-            <button id="gif-search-btn">Search</button>
-        </div>
 
-        <!-- Сетка с гифками (теперь она заполняется динамически) -->
-        <div class="gif-grid" id="gif-grid-container">
-            <!-- Сюда скрипт будет подгружать новые карточки -->
-            <p style="text-align: center; color: gray; width: 100%;">Type something in search to see GIFs...</p>
-        </div>
-    </section>
+    <!-- Hero -->
+    <main>
+        <section class="mg">
+            <img
+                class="imgstart"
+                src="imgstart.png"
+                alt="Gifora logo"
+                onerror="this.hidden = true"
+            >
 
-    <!-- СКРИПТ ПОДКЛЮЧЕНИЯ API -->
+            <h1>Gifora</h1>
+            <p class="tagline">
+                Bring your favorite GIFs to life on your desktop.
+            </p>
+
+            <div class="span"></div>
+
+            <a id="download" href="gif.zip" download>
+                скачать прогу
+            </a>
+
+            <article class="description">
+                <h2>Make Your Desktop Come Alive</h2>
+
+                <p>
+                    Gifora brings your favorite GIFs straight to your
+                    desktop, allowing you to personalize your workspace
+                    exactly the way you want.
+                </p>
+
+                <p>
+                    Choose any GIF you love and turn it into a floating
+                    animation on your screen. Easily resize it, adjust
+                    its transparency, and drag it anywhere on your
+                    desktop.
+                </p>
+
+                <p>
+                    Whether you prefer a subtle animation in the corner
+                    or a more noticeable presence on your screen, Gifora
+                    gives you control over how your GIF looks and where
+                    it appears.
+                </p>
+
+                <p>
+                    <strong>Your Desktop. Your Style. Your GIFs.</strong>
+                </p>
+
+                <p>
+                    Give your desktop a personal touch with Gifora.
+                    Simple, customizable, and made to bring a little
+                    more life to your everyday workspace.
+                </p>
+            </article>
+        </section>
+
+        <!-- GIF Library -->
+        <section class="library" id="library">
+            <h2>GIF Library</h2>
+
+            <p class="library-sub">
+                Find a sticker you like and download it for your desktop.
+            </p>
+
+            <form class="search-container" id="gif-search-form">
+                <input
+                    id="gif-search-input"
+                    type="search"
+                    placeholder="Search GIFs... e.g. cat, pixel art"
+                    aria-label="Search GIF stickers"
+                    autocomplete="off"
+                    maxlength="100"
+                >
+
+                <button id="gif-search-btn" type="submit">
+                    Search
+                </button>
+            </form>
+
+            <div class="library-actions">
+                <button
+                    class="secondary-btn"
+                    id="trending-btn"
+                    type="button"
+                >
+                    ↻ Trending stickers
+                </button>
+            </div>
+
+            <p
+                class="status"
+                id="gif-status"
+                role="status"
+                aria-live="polite"
+            >Loading popular stickers...</p>
+
+            <div
+                class="gif-grid"
+                id="gif-grid-container"
+                aria-label="GIF results"
+            ></div>
+        </section>
+    </main>
+
+    <footer>
+        © <span id="year"></span> Gifora. Make your desktop yours.
+        <p>GIF content provided by GIPHY.</p>
+    </footer>
+
     <script>
-        // Публичный тестовый ключ GIPHY (для разработки)
-        const GIPHY_API_KEY = 'tDdWcXh1xJcG9xegrz95SjTocJBaHc9X'; 
-        const searchInput = document.getElementById('gif-search-input');
-        const searchBtn = document.getElementById('gif-search-btn');
-        const gridContainer = document.getElementById('gif-grid-container');
+        "use strict";
 
-        // Функция запроса к API
-        async function fetchGifs(query) {
-            if (!query.trim()) return;
+        // ----------------------------------------
+        // GIPHY API configuration
+        // ----------------------------------------
 
-            gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">Loading...</p>';
+        // Replace this demo key with your own GIPHY API key
+        // for a production website.
+        const GIPHY_API_KEY = "dc6zaTOxFJmzC";
 
-            // URL для поиска: запрашиваем 12 гифок (limit=12)
-            const url = `https://giphy.com{GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=12&rating=g`;
+        const API_BASE = "https://api.giphy.com/v1/stickers";
+
+        const form = document.getElementById("gif-search-form");
+        const searchInput = document.getElementById("gif-search-input");
+        const searchBtn = document.getElementById("gif-search-btn");
+        const trendingBtn = document.getElementById("trending-btn");
+        const gridContainer = document.getElementById("gif-grid-container");
+        const statusElement = document.getElementById("gif-status");
+
+        let activeController = null;
+
+        document.getElementById("year").textContent =
+            new Date().getFullYear();
+
+        // ----------------------------------------
+        // Status messages
+        // ----------------------------------------
+
+        function showStatus(message, type = "info") {
+            statusElement.textContent = message;
+            statusElement.hidden = false;
+            statusElement.classList.toggle("error", type === "error");
+        }
+
+        function hideStatus() {
+            statusElement.hidden = true;
+            statusElement.classList.remove("error");
+        }
+
+        // ----------------------------------------
+        // API requests
+        // ----------------------------------------
+
+        async function fetchStickers(endpoint, params = {}) {
+            // Cancel the previous search if another one starts.
+            if (activeController) {
+                activeController.abort();
+            }
+
+            const controller = new AbortController();
+            activeController = controller;
+
+            const query = new URLSearchParams({
+                api_key: GIPHY_API_KEY,
+                limit: String(params.limit ?? 12),
+                rating: "g",
+                bundle: "sticker_layering",
+                ...params
+            });
+
+            const url = `${API_BASE}/${endpoint}?${query.toString()}`;
+
+            searchBtn.disabled = true;
+            trendingBtn.disabled = true;
+
+            showStatus(
+                endpoint === "trending"
+                    ? "Loading popular stickers..."
+                    : "Searching stickers..."
+            );
+
+            gridContainer.replaceChildren();
 
             try {
-                const response = await fetch(url);
-                const result = await response.json();
-                
-                // Очищаем контейнер перед выводом результатов
-                gridContainer.innerHTML = '';
+                const response = await fetch(url, {
+                    signal: controller.signal
+                });
 
-                if (result.data.length === 0) {
-                    gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">No GIFs found. Try another keywords.</p>';
+                if (!response.ok) {
+                    throw new Error(
+                        `GIPHY returned HTTP ${response.status}`
+                    );
+                }
+
+                const result = await response.json();
+
+                if (!Array.isArray(result.data)) {
+                    throw new Error("Unexpected API response.");
+                }
+
+                // Ignore stale results from an older request.
+                if (activeController !== controller) {
                     return;
                 }
 
-                // Перебираем полученные гифки и создаем HTML-карточки
-                result.data.forEach(gif => {
-                    const gifUrl = gif.images.fixed_height.url; // URL для отображения на сайте
-                    const downloadUrl = gif.images.original.url; // URL оригинального файла для скачивания
-                    const title = gif.title || 'GIF';
+                if (result.data.length === 0) {
+                    showStatus(
+                        "No stickers found. Try another search, like cat or pixel art."
+                    );
+                    return;
+                }
 
-                    const card = document.createElement('div');
-                    card.className = 'gif-card';
-
-                    card.innerHTML = `
-                        <img src="${gifUrl}" alt="${title}" loading="lazy">
-                        <a class="gif-dl" href="${downloadUrl}" target="_blank" download="gifora_${gif.id}.gif">download</a>
-                    `;
-
-                    gridContainer.appendChild(card);
-                });
+                renderStickers(result.data);
+                hideStatus();
 
             } catch (error) {
-                console.error("Ошибка при работе с GIPHY API:", error);
-                gridContainer.innerHTML = '<p style="text-align: center; color: red; width: 100%;">Error loading GIFs. Try again later.</p>';
+                if (error.name === "AbortError") {
+                    return;
+                }
+
+                console.error("GIPHY API error:", error);
+
+                if (activeController === controller) {
+                    showStatus(
+                        "Could not load stickers. Check your internet connection or API key and try again.",
+                        "error"
+                    );
+                }
+            } finally {
+                if (activeController === controller) {
+                    activeController = null;
+                    searchBtn.disabled = false;
+                    trendingBtn.disabled = false;
+                }
             }
         }
 
-        // Обработчик клика на кнопку поиска
-        searchBtn.addEventListener('click', () => {
-            fetchGifs(searchInput.value);
-        });
+        // ----------------------------------------
+        // Render sticker cards safely
+        // ----------------------------------------
 
-        // Поиск при нажатии клавиши Enter в поле ввода
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                fetchGifs(searchInput.value);
-            }
-        });
+        function renderStickers(stickers) {
+            const fragment = document.createDocumentFragment();
 
-        // Дополнительно: загрузим трендовые гифки сразу при открытии страницы
-        async function loadTrending() {
-            gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">Loading trends...</p>';
-            const url = `https://giphy.com{GIPHY_API_KEY}&limit=6&rating=g`;
-            try {
-                const response = await fetch(url);
-                const result = await response.json();
-                gridContainer.innerHTML = '';
-                result.data.forEach(gif => {
-                    const card = document.createElement('div');
-                    card.className = 'gif-card';
-                    card.innerHTML = `
-                        <img src="${gif.images.fixed_height.url}" alt="${gif.title}" loading="lazy">
-                        <a class="gif-dl" href="${gif.images.original.url}" target="_blank" download>download</a>
-                    `;
-                    gridContainer.appendChild(card);
-                });
-            } catch (e) {
-                gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">Search for your favorite GIFs above!</p>';
+            stickers.forEach((sticker) => {
+                const images = sticker.images || {};
+
+                const previewUrl =
+                    images.fixed_height?.url ||
+                    images.preview_gif?.url ||
+                    images.original?.url;
+
+                const originalUrl = images.original?.url || previewUrl;
+
+                if (!previewUrl || !originalUrl) {
+                    return;
+                }
+
+                const card = document.createElement("article");
+                card.className = "gif-card";
+
+                const image = document.createElement("img");
+                image.className = "gif-preview";
+                image.src = previewUrl;
+                image.alt = sticker.title || "GIF sticker";
+                image.loading = "lazy";
+                image.decoding = "async";
+
+                image.addEventListener("error", () => {
+                    image.alt = "Preview unavailable";
+                }, { once: true });
+
+                const title = document.createElement("p");
+                title.className = "gif-title";
+                title.textContent = sticker.title || "GIF sticker";
+
+                const download = document.createElement("a");
+                download.className = "gif-dl";
+                download.href = originalUrl;
+                download.target = "_blank";
+                download.rel = "noopener noreferrer";
+                download.textContent = "Download GIF";
+                download.setAttribute(
+                    "aria-label",
+                    `Open or download ${sticker.title || "GIF sticker"}`
+                );
+
+                // Cross-origin downloads may open in a new tab instead
+                // of saving directly, depending on the browser/server.
+                card.append(image, title, download);
+                fragment.appendChild(card);
+            });
+
+            gridContainer.replaceChildren(fragment);
+
+            if (!gridContainer.children.length) {
+                showStatus(
+                    "No usable GIF previews were returned. Try another search."
+                );
+                return;
             }
+
+            hideStatus();
         }
-        
-        // Запускаем показ трендов при старте страницы
-        loadTrending();
+
+        // ----------------------------------------
+        // Search stickers
+        // ----------------------------------------
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const query = searchInput.value.trim();
+
+            if (!query) {
+                searchInput.focus();
+                showStatus("Enter a search term first.");
+                return;
+            }
+
+            fetchStickers("search", {
+                q: query,
+                limit: 12,
+                lang: "en"
+            });
+        });
+
+        // ----------------------------------------
+        // Trending stickers
+        // ----------------------------------------
+
+        trendingBtn.addEventListener("click", () => {
+            searchInput.value = "";
+
+            fetchStickers("trending", {
+                limit: 12
+            });
+        });
+
+        // ----------------------------------------
+        // Initial load
+        // ----------------------------------------
+
+        fetchStickers("trending", {
+            limit: 12
+        });
     </script>
 </body>
 </html>
