@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Gifora</title>
+    <style>
+        /* Минимальные стили для строки поиска, чтобы она вписалась в ваш CSS */
+        .search-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .search-container input {
+            padding: 10px 15px;
+            font-size: 16px;
+            width: 60%;
+            max-width: 400px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav">
+            <div class="atre1">
+                <a href="index.html">main</a>
+                <a href="#download">download</a>
+                <a href="#library">library</a>
+            </div>
+ 
+            <div class="atre2">
+                <a href="https://discord.com/channels/1559254834098479136/1559254834694324358">user discord</a>
+            </div>
+        </div>
+    </nav>
+    <div class="span"></div>
+    <div class="mg">
+        <img class="imgstart" src="imgstart.png" alt="">
+        <h1>Gifora</h1>
+        <p>Bring your favorite GIFs to life on your desktop.</p>
+        <div class="span"></div>
+        <a id="download" href="gif.zip" download>скачать прогу</a>
+        <p style="margin-top: 45px;">Make Your Desktop Come Alive
+        
+            Gifora brings your favorite GIFs straight to your desktop, allowing you to personalize your workspace exactly the
+            way you want.
+        
+            Choose any GIF you love and turn it into a floating animation on your screen. Easily resize it, adjust its
+            transparency, and drag it anywhere on your desktop. Whether you prefer a subtle animation in the corner or a more
+            noticeable presence on your screen, Gifora gives you complete control over how your GIF looks and where it appears.
+        
+            ### Your Desktop. Your Style. Your GIFs.
+        
+            Give your desktop a personal touch with Gifora. Simple, customizable, and made to bring a little more life to your
+            everyday workspace.
+        </p>
+    </div>
+ 
+    <section class="library" id="library">
+        <h2>GIF Library</h2>
+        <p class="library-sub">Pick a GIF and download it, then load it into Gifora.</p>
+ 
+        <!-- БЛОК ПОИСКА -->
+        <div class="search-container">
+            <input type="text" id="gif-search-input" placeholder="Search for GIFs (e.g., cats, anime)...">
+            <button id="gif-search-btn">Search</button>
+        </div>
+
+        <!-- Сетка с гифками (теперь она заполняется динамически) -->
+        <div class="gif-grid" id="gif-grid-container">
+            <!-- Сюда скрипт будет подгружать новые карточки -->
+            <p style="text-align: center; color: gray; width: 100%;">Type something in search to see GIFs...</p>
+        </div>
+    </section>
+
+    <!-- СКРИПТ ПОДКЛЮЧЕНИЯ API -->
+    <script>
+        // Публичный тестовый ключ GIPHY (для разработки)
+        const GIPHY_API_KEY = 'tDdWcXh1xJcG9xegrz95SjTocJBaHc9X'; 
+        const searchInput = document.getElementById('gif-search-input');
+        const searchBtn = document.getElementById('gif-search-btn');
+        const gridContainer = document.getElementById('gif-grid-container');
+
+        // Функция запроса к API
+        async function fetchGifs(query) {
+            if (!query.trim()) return;
+
+            gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">Loading...</p>';
+
+            // URL для поиска: запрашиваем 12 гифок (limit=12)
+            const url = `https://giphy.com{GIPHY_API_KEY}&q=${encodeURIComponent(query)}&limit=12&rating=g`;
+
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                // Очищаем контейнер перед выводом результатов
+                gridContainer.innerHTML = '';
+
+                if (result.data.length === 0) {
+                    gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">No GIFs found. Try another keywords.</p>';
+                    return;
+                }
+
+                // Перебираем полученные гифки и создаем HTML-карточки
+                result.data.forEach(gif => {
+                    const gifUrl = gif.images.fixed_height.url; // URL для отображения на сайте
+                    const downloadUrl = gif.images.original.url; // URL оригинального файла для скачивания
+                    const title = gif.title || 'GIF';
+
+                    const card = document.createElement('div');
+                    card.className = 'gif-card';
+
+                    card.innerHTML = `
+                        <img src="${gifUrl}" alt="${title}" loading="lazy">
+                        <a class="gif-dl" href="${downloadUrl}" target="_blank" download="gifora_${gif.id}.gif">download</a>
+                    `;
+
+                    gridContainer.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Ошибка при работе с GIPHY API:", error);
+                gridContainer.innerHTML = '<p style="text-align: center; color: red; width: 100%;">Error loading GIFs. Try again later.</p>';
+            }
+        }
+
+        // Обработчик клика на кнопку поиска
+        searchBtn.addEventListener('click', () => {
+            fetchGifs(searchInput.value);
+        });
+
+        // Поиск при нажатии клавиши Enter в поле ввода
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                fetchGifs(searchInput.value);
+            }
+        });
+
+        // Дополнительно: загрузим трендовые гифки сразу при открытии страницы
+        async function loadTrending() {
+            gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">Loading trends...</p>';
+            const url = `https://giphy.com{GIPHY_API_KEY}&limit=6&rating=g`;
+            try {
+                const response = await fetch(url);
+                const result = await response.json();
+                gridContainer.innerHTML = '';
+                result.data.forEach(gif => {
+                    const card = document.createElement('div');
+                    card.className = 'gif-card';
+                    card.innerHTML = `
+                        <img src="${gif.images.fixed_height.url}" alt="${gif.title}" loading="lazy">
+                        <a class="gif-dl" href="${gif.images.original.url}" target="_blank" download>download</a>
+                    `;
+                    gridContainer.appendChild(card);
+                });
+            } catch (e) {
+                gridContainer.innerHTML = '<p style="text-align: center; width: 100%;">Search for your favorite GIFs above!</p>';
+            }
+        }
+        
+        // Запускаем показ трендов при старте страницы
+        loadTrending();
+    </script>
+</body>
+</html>
